@@ -1,0 +1,60 @@
+# Ambientes Python e caches
+.venv/
+venv/
+env/
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+.coverage.*
+htmlcov/
+*.egg-info/
+build/
+dist/
+
+# Configuracoes locais e credenciais
+.env
+.env.*
+!.env.example
+.aws/
+.ssh/
+*.pem
+*.p12
+*.pfx
+
+# Corpus, cenas e mapas gerados (inclui audio e manifestos locais)
+/data/
+
+# Checkpoints, logs, metricas e resultados de experimentos
+/artifacts/
+/runs/
+*.pt
+*.pth
+*.ckpt
+*.onnx
+*.log
+*.tfevents.*
+
+# Relatorios exportados e arquivos temporarios
+/output/
+/tmp/
+*.pdf
+
+# Apresentacoes exportadas e documentos de escritorio gerados
+/PSI3501_Apresentacao_*.html
+*.ppt
+*.pptx
+*.odp
+
+# Scripts ligados a apresentacoes pessoais e nao ao pipeline do projeto
+/scripts/build_presentation_v2.py
+/scripts/check_presentation_v2.py
+
+# Arquivos locais do sistema operacional e editores
+.DS_Store
+Thumbs.db
+desktop.ini
+.idea/

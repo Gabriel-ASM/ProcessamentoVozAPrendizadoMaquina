@@ -1,0 +1,51 @@
+profile: wave_pilot
+simulation:
+  backend: pyroomacoustics
+  rt60_range: [0.2, 0.8]
+  rt60_calibration_slope: 1.4940718
+  rt60_calibration_intercept: -0.11300725
+  snr_range_db: [10.0, 30.0]
+  n_sources: [1, 2, 3]
+  n_microphones: [4, 6, 8]
+  geometries: [perimeter, circle]
+  room:
+    dimensions: [8.0, 6.0, 3.0]
+    source_height: 1.5
+    microphone_height: 1.5
+  audio:
+    sample_rate: 16000
+    duration_seconds: 2.0
+    context_seconds: 0.25
+    stft_window: 512
+    stft_hop: 256
+    fft_size: 1024
+grid:
+  resolution_m: 0.10
+  sigma_m: 0.15
+  peak_suppression_radius_m: 0.30
+dataset:
+  train_count: 36
+  validation_count: 18
+  test_count: 18
+  seed: 42
+  output_root: data/wave_pilot
+  corpus_root: data/wave_pilot/LibriSpeech
+  manifest_root: data/wave_pilot/manifests
+  generation_workers: 2
+  map_variant: mixture
+  map_audio_variant: mixture
+  save_clean_targets: true
+train:
+  batch_size: 6
+  epochs: 6
+  learning_rate: 0.001
+  early_stopping_patience: 4
+  device: auto
+  run_root: artifacts
+enhancement:
+  max_microphones: 8
+  base_channels: 8
+  depth: 4
+  batch_size: 1
+  epochs: 5
+  learning_rate: 0.0005

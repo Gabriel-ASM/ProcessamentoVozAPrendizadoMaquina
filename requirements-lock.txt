@@ -1,0 +1,10 @@
+# Tested target: CPython 3.11 on Windows. Keep this file together with pyproject.toml.
+numpy==1.26.4
+scipy==1.13.1
+soundfile==0.12.1
+PyYAML==6.0.1
+matplotlib==3.8.4
+pyroomacoustics==0.7.7
+torch==2.3.1
+tensorboard==2.16.2
+pytest==8.2.2

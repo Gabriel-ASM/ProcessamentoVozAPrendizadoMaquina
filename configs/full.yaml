@@ -1,0 +1,32 @@
+profile: full
+simulation:
+  backend: pyroomacoustics
+  rt60_range: [0.2, 0.8]
+  rt60_calibration_slope: 1.4940718
+  rt60_calibration_intercept: -0.11300725
+  snr_range_db: [10.0, 30.0]
+  n_sources: [1, 2, 3]
+  n_microphones: [4, 6, 8]
+  geometries: [perimeter, circle]
+dataset:
+  train_count: 24000
+  validation_count: 3000
+  test_count: 3000
+  seed: 42
+  output_root: data/full
+  corpus_root: data/full/LibriSpeech
+  manifest_root: data/full/manifests
+  generation_workers: 2
+  save_clean_targets: true
+train:
+  batch_size: 16
+  epochs: 50
+  learning_rate: 0.001
+  weight_decay: 0.0001
+  early_stopping_patience: 8
+  scheduler_patience: 3
+  scheduler_factor: 0.5
+  num_workers: 0
+  seed: 42
+  device: auto
+  run_root: artifacts

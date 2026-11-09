@@ -1,0 +1,24 @@
+profile: pilot
+simulation:
+  backend: pyroomacoustics
+  rt60_range: [0.2, 0.8]
+  rt60_calibration_slope: 1.4940718
+  rt60_calibration_intercept: -0.11300725
+  snr_range_db: [10.0, 30.0]
+  n_sources: [1, 2, 3]
+  n_microphones: [4, 6, 8]
+  geometries: [perimeter, circle]
+dataset:
+  train_count: 120
+  validation_count: 30
+  test_count: 30
+  seed: 42
+  output_root: data/pilot
+  corpus_root: data/pilot/LibriSpeech
+  manifest_root: data/pilot/manifests
+  generation_workers: 2
+train:
+  batch_size: 16
+  epochs: 10
+  device: auto
+  run_root: artifacts

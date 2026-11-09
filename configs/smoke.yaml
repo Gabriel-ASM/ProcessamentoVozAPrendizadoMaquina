@@ -1,0 +1,36 @@
+profile: smoke
+simulation:
+  backend: anechoic
+  rt60_range: [0.2, 0.8]
+  snr_range_db: [10.0, 30.0]
+  n_sources: [1, 2, 3]
+  n_microphones: [4, 6, 8]
+  geometries: [perimeter, circle]
+  room:
+    dimensions: [8.0, 6.0, 3.0]
+    source_height: 1.5
+    microphone_height: 1.5
+  audio:
+    sample_rate: 16000
+    duration_seconds: 2.0
+    context_seconds: 0.25
+    stft_window: 512
+    stft_hop: 256
+    fft_size: 1024
+grid:
+  resolution_m: 0.10
+  sigma_m: 0.15
+  peak_suppression_radius_m: 0.30
+dataset:
+  train_count: 8
+  validation_count: 4
+  test_count: 4
+  seed: 42
+  output_root: data/smoke
+  manifest_root: data/smoke/manifests
+  generation_workers: 1
+train:
+  batch_size: 4
+  epochs: 1
+  device: auto
+  run_root: artifacts
