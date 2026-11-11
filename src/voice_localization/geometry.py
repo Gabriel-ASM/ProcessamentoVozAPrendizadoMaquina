@@ -4,6 +4,8 @@ from __future__ import annotations
 
 import numpy as np
 
+ROUND6_CIRCLE_PHASE_RAD = 1.960902953404544
+
 
 def microphone_array(
     geometry: str,
@@ -16,7 +18,8 @@ def microphone_array(
     """Retorna posições no formato ``(M, 3)``.
 
     ``perimeter`` usa pontos uniformemente distribuídos no perímetro do
-    retângulo interno. ``circle`` usa uma circunferência centrada na sala.
+    retângulo interno. ``circle`` usa rotação aleatória; ``circle_r6``
+    fixa a orientação validada na Rodada 6.
     """
     if count < 2:
         raise ValueError("uma matriz precisa de pelo menos dois microfones")
@@ -26,9 +29,14 @@ def microphone_array(
     if not 0 < height < room_height:
         raise ValueError("altura dos microfones fora da sala")
     rng = np.random.default_rng(seed)
-    if geometry == "circle":
+    if geometry in {"circle", "circle_r6"}:
         radius = min(width, length) / 3.0
-        angles = 2 * np.pi * np.arange(count) / count + rng.uniform(0, 2 * np.pi)
+        phase = (
+            ROUND6_CIRCLE_PHASE_RAD
+            if geometry == "circle_r6"
+            else rng.uniform(0, 2 * np.pi)
+        )
+        angles = 2 * np.pi * np.arange(count) / count + phase
         xy = np.column_stack((width / 2 + radius * np.cos(angles), length / 2 + radius * np.sin(angles)))
     elif geometry == "perimeter":
         x0, x1 = margin, width - margin

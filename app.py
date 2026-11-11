@@ -159,6 +159,9 @@ def _make_scene(n_sources: int, n_microphones: int, geometry: str, snr: float, r
     from voice_localization.manifest import SceneRecord
 
     config = load_config(ROOT / "configs" / "full.yaml")
+    if geometry == "circle_r6":
+        # This fixed orientation exactly reproduces the Round 6 finalist.
+        config.simulation.geometries = (*config.simulation.geometries, "circle_r6")
     if n_sources not in config.simulation.n_sources:
         raise ValueError("N fora do domínio do experimento")
     if n_microphones not in config.simulation.n_microphones:
@@ -174,7 +177,16 @@ def _make_scene(n_sources: int, n_microphones: int, geometry: str, snr: float, r
     n_index = config.simulation.n_sources.index(n_sources)
     m_index = config.simulation.n_microphones.index(n_microphones)
     geometry_index = config.simulation.geometries.index(geometry)
-    scene_index = geometry_index * 9 + m_index * 3 + n_index + counter * 18
+    conditions_per_geometry = (
+        len(config.simulation.n_sources) * len(config.simulation.n_microphones)
+    )
+    counter_offset = counter + (10_000 if geometry == "circle_r6" else 0)
+    scene_index = (
+        geometry_index * conditions_per_geometry
+        + m_index * len(config.simulation.n_sources)
+        + n_index
+        + counter_offset * conditions_per_geometry * len(config.simulation.geometries)
+    )
     output_dir = Path(config.dataset.output_root) / "scenes" / "train"
     command = [
         sys.executable,
@@ -330,8 +342,26 @@ with st.sidebar:
     st.header("Condições simuladas")
     selected_seed = st.selectbox("Seed de modelos congelados", [42, 43, 44], index=0)
     n_sources = st.selectbox("Fontes (N)", [1, 2, 3], index=1)
-    n_microphones = st.selectbox("Microfones (M)", [4, 6, 8], index=1)
-    geometry = st.selectbox("Geometria", ["perimeter", "circle"], format_func=lambda x: "Perímetro" if x == "perimeter" else "Círculo")
+    n_microphones = st.selectbox("Microfones (M)", [4, 6, 8], index=2)
+    geometry_options = ["circle_r6", "perimeter", "circle"]
+    geometry_labels = {
+        "circle_r6": "Círculo da Rodada 6 (orientação validada)",
+        "perimeter": "Perímetro (baseline)",
+        "circle": "Círculo com orientação aleatória",
+    }
+    geometry = st.selectbox(
+        "Geometria",
+        geometry_options,
+        format_func=lambda value: geometry_labels[value],
+    )
+    if geometry == "circle_r6":
+        st.caption(
+            "Arranjo circular de raio 2 m reproduzido da Rodada 6. "
+            "A redução de P90 foi confirmada para M=8; em M=4 e M=6, "
+            "a evidência confirmatória foi de média, não de P90. "
+            "A confirmação estatística foi para SRP-PHAT; CNN e Wave-U-Net "
+            "não foram confirmadas separadamente nesta geometria."
+        )
     snr = st.slider("SNR solicitado (dB)", 10.0, 30.0, 20.0, 1.0)
     rt60 = st.slider("RT60 solicitado (s)", 0.2, 0.8, 0.5, 0.05)
     generate = st.button("Gerar cena e comparar", type="primary", use_container_width=True)

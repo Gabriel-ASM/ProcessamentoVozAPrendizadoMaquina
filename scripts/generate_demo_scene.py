@@ -18,13 +18,18 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--n-sources", type=int, required=True)
     parser.add_argument("--n-microphones", type=int, required=True)
-    parser.add_argument("--geometry", choices=("perimeter", "circle"), required=True)
+    parser.add_argument(
+        "--geometry", choices=("perimeter", "circle", "circle_r6"), required=True
+    )
     parser.add_argument("--snr-db", type=float, required=True)
     parser.add_argument("--rt60", type=float, required=True)
     parser.add_argument("--counter", type=int, required=True)
     args = parser.parse_args()
 
     config = load_config(ROOT / "configs" / "full.yaml")
+    if args.geometry == "circle_r6":
+        # Keep the Round 6 finalist out of the frozen training configuration.
+        config.simulation.geometries = (*config.simulation.geometries, "circle_r6")
     if args.n_sources not in config.simulation.n_sources:
         parser.error("N fora do domínio do experimento")
     if args.n_microphones not in config.simulation.n_microphones:
@@ -47,7 +52,16 @@ def main() -> int:
     n_index = config.simulation.n_sources.index(args.n_sources)
     m_index = config.simulation.n_microphones.index(args.n_microphones)
     geometry_index = config.simulation.geometries.index(args.geometry)
-    scene_index = geometry_index * 9 + m_index * 3 + n_index + args.counter * 18
+    conditions_per_geometry = (
+        len(config.simulation.n_sources) * len(config.simulation.n_microphones)
+    )
+    counter_offset = args.counter + (10_000 if args.geometry == "circle_r6" else 0)
+    scene_index = (
+        geometry_index * conditions_per_geometry
+        + m_index * len(config.simulation.n_sources)
+        + n_index
+        + counter_offset * conditions_per_geometry * len(config.simulation.geometries)
+    )
     generator = SceneGenerator(config, records, synthetic_audio=False)
     output_dir = Path(config.dataset.output_root) / "scenes" / "train"
     record = generator._generate_scene("train", scene_index, output_dir)

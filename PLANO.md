@@ -367,3 +367,19 @@ Os cortes exploratórios mostram TDOA melhor em média/P90 para M=4, mas pior em
 **Não promover** a agregação temporal ou o decoder TDOA ao Streamlit. Os quatro testes não encontraram uma melhoria simultânea e robusta para média e P90. Não foi feito teste de Wave-U-Net: a cobertura oráculo favorece primeiro melhorar a escolha de candidatos, e não há evidência de que separar fontes preserve a informação de fase e os TDOAs necessários.
 
 Próxima hipótese com melhor custo-benefício: um reordenador leve do pool top-K, treinado para escolher conjuntos de N posições usando score SRP/CNN, resíduos TDOA e consistência entre pares. Criar antes um split novo de cenas/fontes, descontaminado por áudio e falante, sem reabrir `test-other`; congelar a receita antes do holdout. Triagem curta com média, P90 e taxa >1 m; avançar no máximo um finalista se os três objetivos forem promissores. Os achados por N/M deste Round 5 servem apenas para formular a hipótese, não para escolher limiares ou regras de implantação.
+
+**Adendo posterior:** a hipótese foi separada em uma triagem de reordenador local mais simples e registrada no Round 6. Sete regras foram avaliadas no pool top-50 SRP em 3.000 cenas; nenhuma passou o critério de média/P90 sem piora na taxa >1 m. O método e a decisão estão resumidos nas seções seguintes.
+
+## 12. Execução e promoção da Rodada 6 — geometria de microfones
+
+**Data:** 2026-11-09. **Status:** validação independente concluída; opção “Círculo da Rodada 6” promovida à demonstração Streamlit, com M=8 como padrão. A tela usa a orientação exata do círculo testado, conserva o perímetro e o círculo aleatório para comparação e avisa que a evidência de P90 se aplica a M=8. A confirmação para SRP-PHAT não valida separadamente as saídas da CNN ou da Wave-U-Net.
+
+Com 300 cenas por N×M e falantes LibriSpeech dev-other disjuntos, a geometria circular reduziu a média em M=4/6/8. Apenas M=8 teve redução confirmatória de P90 (3,107→2,904 m; ganho de 0,203 m, IC95% 0,042–0,343 m). Em M=4/6, o P90 não melhorou de forma conclusiva. A taxa >1 m caiu nos três M. Os dados gerados e as métricas por cena permanecem locais e não são versionados. O runner está em [`scripts/run_round6.py`](scripts/run_round6.py).
+
+### Próximas hipóteses recomendadas
+
+1. **Busca direta de raio e orientação**, partindo do círculo de 2 m. Otimizar a média e P90 do SRP real em cenas pareadas, não o proxy FIM/entropia usado nesta triagem. Fazer poucas variantes e reservar um split novo para confirmação.
+2. **Ajuste generativo do mapa SRP para N fontes**, com esparsidade e rejeição da parte do mapa não explicada pelo modelo. É uma alternativa ao decoder de picos e ao reordenador rejeitado; há evidência publicada de redução de erro frente ao SRP-PHAT, mas precisa ser validada neste projeto e especialmente para N=2/3 ([Velasco et al., 2012](https://doi.org/10.3390/s121013781)).
+3. **Diversidade espacial em reverberação alta**, combinando mapas SRP de subarranjos suficientemente separados. Um estudo com simulações e medidas reais relata robustez maior usando várias matrizes pequenas separadas; vale uma triagem estratificada por RT60, porque essa adaptação pode perder resolução ao reduzir os pares por subarranjo ([García-Barrios et al., 2023](https://doi.org/10.1016/j.apacoust.2022.109138)).
+
+O método publicado de entropia para geometria SRP-PHAT usa uma sensibilidade espacial construída a partir de TDOAs/GCC e otimização sem derivadas; o proxy FIM simplificado testado nesta rodada não reproduz esse método. Ele é uma hipótese científica distinta para uma rodada futura ([Salvati, 2026](https://doi.org/10.1109/LSP.2026.3675914)). A otimização PSO de arranjos TDOA também fornece precedente metodológico, embora seu objetivo e cenário experimental difiram deste projeto ([Wang et al., 2019](https://doi.org/10.3390/s19194326)).

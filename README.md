@@ -89,6 +89,8 @@ streamlit run app.py
 
 A demonstração depende da base completa, dos normalizadores e dos checkpoints treinados em `artifacts/`; esses arquivos não estão incluídos no repositório.
 
+Por padrão, a tela usa M=8 e o arranjo circular fixo da Rodada 6. O seletor mantém o perímetro baseline e o círculo com orientação aleatória para comparação. A confirmação independente da Rodada 6 avaliou SRP-PHAT; os valores de CNN e Wave-U-Net exibidos para novas cenas continuam sendo comparações demonstrativas, não uma validação específica dessa geometria.
+
 ## Licença
 
 Este repositório ainda não contém um arquivo de licença para o código. O corpus LibriSpeech é externo e mantém seus próprios termos de uso.
